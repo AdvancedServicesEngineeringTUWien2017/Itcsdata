@@ -1,5 +1,5 @@
 The Miniproject is thought to work with udp-streaming. But as the Simulator and the database cannot be shared because of propery reason 
-example data is provided in ItcsData and the template MinirojectNifiFile.xml is provided.s
+example data is provided in ItcsData and the template MinirojectNifiFile.xml is provided.
 
 1. Get Apache NIFI https://nifi.apache.org/download.html
 2. Run NIFI ..nifi-1.1.2\bin\run-nifi.bat
