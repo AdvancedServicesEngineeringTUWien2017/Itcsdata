@@ -1,0 +1,12 @@
+The Miniproject is thought to work with udp-streaming. But as the Simulator and the database cannot be shared because of propery reason 
+example data is provided in ItcsData and the template MinirojectNifiFile.xml is provided.s
+
+1. Get Apache NIFI https://nifi.apache.org/download.html
+2. Run NIFI ..nifi-1.1.2\bin\run-nifi.bat
+3. Import Template MiniProjectNifiGetFile.xml  https://www.youtube.com/watch?v=HU5_3PlNmtQ
+4. Right click GetFile - Configure - Properties - Input Directory {change to ItcsData-Folder of Source}
+5. Right click ExecuteScript - Configure - Properties - Script File {change to filter0gps.js of Source}
+
+1. Configure Mail in application.properties
+2. Recompile
+3. start 

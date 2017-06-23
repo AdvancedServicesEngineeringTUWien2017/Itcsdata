@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css"  media="screen,projection"/>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8"> 
+  </head>
+
+  <body class="blue-grey-text text-darken-3">
+    <header>
+    </header>
+
+    <main>
+      <div class="container">
+            <h3>ItcsDataFlow</h3>
+            <br>
+
+            <div class="row">
+                <div class="col s6">
+                  <ul class="collection with-header">
+                    <li class="collection-header"><h5>Datenfluss</h5></li>
+                    <li class="collection-item"><i class="tiny material-icons">shopping_cart</i> <a href="#" class="blue-grey-text">Anzahl aktiver Busse</a> <span id="busses" class="secondary-content positive"></span></li>
+                    <li class="collection-item"><i class="tiny material-icons">trending_up</i> <a href="#" class="blue-grey-text">Anzahl Packete 0 GPS</a> <span id="0gps" class="secondary-content positive"></span></li>
+                    <li class="collection-item"><i class="tiny material-icons">today</i> <a href="#" class="blue-grey-text">Fehlsendungen</a> <span id="error" class="secondary-content positive"></span></li>
+                  </ul>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col s12">
+	                    <h5>Datenverlauf: Busse, NoGPS, Error</h5>
+                    <div id="curve_chart" style="height: 500px;"></div>
+                </div>
+            </div>
+    </div>
+        
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script>
+
+		google.charts.load('current', {'packages':['corechart']});
+    	google.charts.setOnLoadCallback(drawChart);
+        	
+        function drawChart() {
+        
+        
+         $.get("/GetChartData", function(value){			
+
+
+        	
+        	var table = new google.visualization.DataTable();
+        	table.addColumn('string', 'Zeit');
+			table.addColumn('number', 'Busses');
+			table.addColumn('number', 'Error');
+			table.addColumn('number', 'NoGPS');
+			
+        	var rows = [];
+        	var time;
+        	var noGPsSet = false;
+        	var ErrorSet = false;
+        	var BusSet = false;
+        	var j = 0;
+        	
+        	
+        	for (i = 0; i < value.length; i ++)
+        	{
+        		if (i == 0)
+        		{
+        			time = value[i].time;
+        			rows[j] = [];
+        			rows[j][0] = value[i].time;
+        			
+        		}
+        		if (time != value[i].time)
+        		{
+					 if(!noGPsSet)
+					 {
+					 	rows[j][3] = 0;
+					 }
+					 if(!ErrorSet)
+					 {
+					 	rows[j][2] = 0;
+					 }
+					 if(!BusSet)
+					 {
+					 	rows[j][1] = 0;
+					 }
+					 noGPsSet = false;
+					 ErrorSet = false;
+					 BusSet = false;
+        			 j ++;
+        			 rows[j] = [];
+        			 rows[j][0] = value[i].time;
+        		}
+        		
+        		if ('NoGSPCount' == value[i].chartTyp)
+        		{
+        			rows[j][3] = value[i].count;
+        			noGPsSet = true;
+        		}else if ('BussCount' == value[i].chartTyp)
+        		{
+        			rows[j][1] = value[i].count;
+        			BusSet = true;
+        		}else if ('ErrorCount' == value[i].chartTyp)
+        		{
+        			rows[j][2] = value[i].count;
+        			ErrorSet = true;
+        		}
+
+        	}
+        	if (value.length > 0)
+        	{
+	        	if(!noGPsSet)
+				 {
+				 	rows[j][3] = 0;
+				 }
+				 if(!ErrorSet)
+				 {
+				 	rows[j][2] = 0;
+				 }
+				 if(!BusSet)
+				 {
+				 	rows[j][1] = 0;
+				 }
+        	}
+
+        	table.addRows(rows);
+        	//var datar = google.visualization.arrayToDataTable(table);
+        	 
+          var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+          chart.draw(table);
+				
+		 }); 
+        }
+
+        $(document).ready(function() {
+			GetValues();
+			setInterval(GetValues, 5000);
+			setInterval(drawChart, 5000);
+        });
+        
+        function GetValues() {
+			$.get("/GetBussesCount", function(value){
+				document.getElementById('busses').innerHTML = value;
+			 }); 
+			 $.get("/GetNoGps", function(value){
+				document.getElementById('0gps').innerHTML = value;
+			 });
+			 $.get("/GetError", function(value){
+				document.getElementById('error').innerHTML = value;
+			 });
+		 }
+        
+    </script>
+  </body>
+</html>
