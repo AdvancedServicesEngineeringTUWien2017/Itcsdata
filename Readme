@@ -10,3 +10,8 @@ example data is provided in ItcsData and the template MinirojectNifiFile.xml is 
 1. Configure Mail in application.properties
 2. Recompile
 3. start 
+
+
+available Sites:
+http://localhost:8443/sum.html
+http://localhost:8443/busses.html
